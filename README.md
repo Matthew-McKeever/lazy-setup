@@ -33,7 +33,7 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 | Node   | 22.11.0   |
 | Java   | 21-tem    |
 | NeoVim | 0.12.0    |
-| NVM    | v0.39.7   |
+| NVM    | 0.40.3   |
 
 ### Overriding version
 Edit the versions.conf file and change the versions to match your needs. 
