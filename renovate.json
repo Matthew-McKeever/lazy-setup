@@ -48,7 +48,17 @@
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v?(?<version>.*)$"
-    }
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README versions block",
+      "matchStrings": [
+       "(?<=<!--\\s*versions:BEGIN\\s*-->)[\\s\\S]*?PYTHON_VERSION=(?<currentValuePython>[^\\s#]+)[\\s\\S]*?GO_VERSION=(?<currentValueGo>[^\\s#]+)[\\s\\S]*?NODE_VERSION=(?<currentValueNode>[^\\s#]+)[\\s\\S]*?NEOVIM_VERSION=(?<currentValueNeovim>[^\\s#]+)[\\s\\S]*?NVM_VERSION=(?<currentValueNvm>[^\\s#]+)[\\s\\S]*?(?=<!--\\s*versions:END\\s*-->)"
+    ],
+    "datasourceTemplate": "github-tags",
+    "extractVersionTemplate": null
+    } 
   ],
 
   "packageRules": [
