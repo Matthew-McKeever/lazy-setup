@@ -23,12 +23,6 @@
 - `shellcheck linux/mint/debian-setup.sh` — lint for common shell pitfalls.
 - `python3 --version`, `node -v`, `go version`, `java -version` — confirm the expected toolchain after the run.
 
-## NeoVim usage
-- Launch the config cleanly: `nvim --clean -u nvim/init.lua`.
-- Sync plugins/headless CI: `nvim --headless "+Lazy sync" "+qa"`.
-- Feature toggles live in `nvim/lua/mycfg/devselect.lua`, so reviewers can enable language-specific bundles deterministically.
-- To copy the config to a workstation that already trusts your dotfiles, copy `nvim/nvim/` to `~/.config/nvim`.
-
 ## Current version pins
 The installer reads these values from `linux/mint/versions.conf`; bump them there before re-running.
 
@@ -40,6 +34,9 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 | Java   | 21-tem    |
 | NeoVim | 0.12.0    |
 | NVM    | v0.39.7   |
+
+### Overriding version
+Edit the versions.conf file and change the versions to match your needs. 
 
 ## Contributing & future tweaks
 - Keep sensitive machine overrides out of git; `versions.conf` should stay public-safe.
