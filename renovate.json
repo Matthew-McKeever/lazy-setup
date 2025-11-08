@@ -14,7 +14,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["^versions\\.conf$"],
+      "managerFilePatterns": ["(^|/)linux/mint/versions\\.conf$"],
 
       "description": "Go toolchain",
       "matchStrings": ["(?:^|\\n)GO_VERSION=(?<currentValue>[^\\s#]+)"],
@@ -23,7 +23,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["^versions\\.conf$"],
+      "managerFilePatterns": ["(^|/)linux/mint/versions\\.conf$"],
 
       "description": "Node.js runtime",
       "matchStrings": ["(?:^|\\n)NODE_VERSION=(?<currentValue>[^\\s#]+)"],
@@ -33,7 +33,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["^versions\\.conf$"],
+      "managerFilePatterns": ["(^|/)linux/mint/versions\\.conf$"],
 
       "description": "Neovim releases",
       "matchStrings": ["(?:^|\\n)NEOVIM_VERSION=(?<currentValue>[^\\s#]+)"],
@@ -44,7 +44,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["^versions\\.conf$"],
+      "managerFilePatterns": ["(^|/)linux/mint/versions\\.conf$"],
 
       "description": "NVM script",
       "matchStrings": ["(?:^|\\n)NVM_VERSION=(?<currentValue>[^\\s#]+)"],
