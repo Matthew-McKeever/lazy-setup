@@ -5,7 +5,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["^versions\\.conf$"],
+      "managerFilePatterns": ["(^|/)linux/mint/versions\\.conf$"],
 
       "description": "Python runtime",
       "matchStrings": ["(?:^|\\n)PYTHON_VERSION=(?<currentValue>[^\\s#]+)"],
