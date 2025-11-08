@@ -4,6 +4,18 @@
 
 set -euo pipefail
 
+#!/usr/bin/env bash
+set -euo pipefail
+
+CONFIG_FILE="$(dirname "$0")/versions.conf"
+if [[ -f "$CONFIG_FILE" ]]; then
+  # shellcheck disable=SC1091
+  source "$CONFIG_FILE"
+else
+  echo "Missing versions.conf — create one before running."
+  exit 1
+fi
+
 ### ───────────────────────── helpers ─────────────────────────
 section() { printf "\n\033[1;36m==> %s\033[0m\n" "$*"; }
 notice()  { printf "\033[0;33m[!] %s\033[0m\n" "$*"; }
@@ -120,4 +132,5 @@ echo "Java:   $(java -version 2>&1 | head -n1 || echo missing)"
 
 section "Done"
 echo "Open a new terminal or run:  exec bash -l"
+
 
