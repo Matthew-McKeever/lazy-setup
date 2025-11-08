@@ -52,24 +52,24 @@
     {
       "customType": "regex",
       "fileMatch": ["(^|/)README\\.md$"],
-      "description": "README PYTHON_VERSION",
-      "matchStrings": ["<!--\\s*versions:BEGIN\\s*-->[\\s\\S]*?PYTHON_VERSION=(?<currentValue>[^\\s#]+)[\\s\\S]*?<!--\\s*versions:END\\s*-->"],
+      "description": "README Python row",
+      "matchStrings": ["\\|\\s*Python\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
       "depNameTemplate": "python",
       "datasourceTemplate": "python-version"
     },
     {
       "customType": "regex",
       "fileMatch": ["(^|/)README\\.md$"],
-      "description": "README GO_VERSION",
-      "matchStrings": ["<!--\\s*versions:BEGIN\\s*-->[\\s\\S]*?GO_VERSION=(?<currentValue>[^\\s#]+)[\\s\\S]*?<!--\\s*versions:END\\s*-->"],
+      "description": "README Go row",
+      "matchStrings": ["\\|\\s*Go\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
       "depNameTemplate": "go",
       "datasourceTemplate": "golang-version"
     },
     {
       "customType": "regex",
       "fileMatch": ["(^|/)README\\.md$"],
-      "description": "README NODE_VERSION",
-      "matchStrings": ["<!--\\s*versions:BEGIN\\s*-->[\\s\\S]*?NODE_VERSION=(?<currentValue>[^\\s#]+)[\\s\\S]*?<!--\\s*versions:END\\s*-->"],
+      "description": "README Node row",
+      "matchStrings": ["\\|\\s*Node\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
       "depNameTemplate": "node",
       "datasourceTemplate": "node-version",
       "versioningTemplate": "node"
@@ -77,8 +77,8 @@
     {
       "customType": "regex",
       "fileMatch": ["(^|/)README\\.md$"],
-      "description": "README NEOVIM_VERSION",
-      "matchStrings": ["<!--\\s*versions:BEGIN\\s*-->[\\s\\S]*?NEOVIM_VERSION=(?<currentValue>[^\\s#]+)[\\s\\S]*?<!--\\s*versions:END\\s*-->"],
+      "description": "README Neovim row",
+      "matchStrings": ["\\|\\s*(?:NeoVim|Neovim)\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
       "depNameTemplate": "neovim/neovim",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
@@ -87,13 +87,14 @@
     {
       "customType": "regex",
       "fileMatch": ["(^|/)README\\.md$"],
-      "description": "README NVM_VERSION",
-      "matchStrings": ["<!--\\s*versions:BEGIN\\s*-->[\\s\\S]*?NVM_VERSION=(?<currentValue>[^\\s#]+)[\\s\\S]*?<!--\\s*versions:END\\s*-->"],
+      "description": "README NVM row",
+      "matchStrings": ["\\|\\s*NVM\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
       "depNameTemplate": "nvm-sh/nvm",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v?(?<version>.*)$"
     }
+
   ],
 
   "packageRules": [
