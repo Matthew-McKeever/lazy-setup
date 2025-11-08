@@ -1,6 +1,65 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["^versions\\.conf$"],
+
+      "description": "Python runtime",
+      "matchStrings": ["(?:^|\\n)PYTHON_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "python-version"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["^versions\\.conf$"],
+
+      "description": "Go toolchain",
+      "matchStrings": ["(?:^|\\n)GO_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "go",
+      "datasourceTemplate": "golang-version"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["^versions\\.conf$"],
+
+      "description": "Node.js runtime",
+      "matchStrings": ["(?:^|\\n)NODE_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["^versions\\.conf$"],
+
+      "description": "Neovim releases",
+      "matchStrings": ["(?:^|\\n)NEOVIM_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "neovim/neovim",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["^versions\\.conf$"],
+
+      "description": "NVM script",
+      "matchStrings": ["(?:^|\\n)NVM_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "nvm-sh/nvm",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ],
+
+  "packageRules": [
+    {
+      "matchManagers": ["custom.regex"],
+      "ignoreUnstable": true,
+      "stabilityDays": 3
+    }
   ]
 }
