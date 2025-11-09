@@ -70,7 +70,7 @@ jobs:
       - name: Verify installed versions match versions.conf
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
 
           VCONF="${VERSIONS_FILE}"
           test -f "$VCONF" || { echo "versions file not found: $VCONF"; exit 1; }
