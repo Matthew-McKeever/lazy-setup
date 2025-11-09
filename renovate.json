@@ -1,0 +1,106 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)linux/mint/versions\\.conf$"],
+      "description": "Python runtime",
+      "matchStrings": ["(?:^|\\r?\\n)PYTHON_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "python-version"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)linux/mint/versions\\.conf$"],
+      "description": "Go toolchain",
+      "matchStrings": ["(?:^|\\r?\\n)GO_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "go",
+      "datasourceTemplate": "golang-version"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)linux/mint/versions\\.conf$"],
+      "description": "Node.js runtime",
+      "matchStrings": ["(?:^|\\r?\\n)NODE_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)linux/mint/versions\\.conf$"],
+      "description": "Neovim releases",
+      "matchStrings": ["(?:^|\\r?\\n)NEOVIM_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "neovim/neovim",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)linux/mint/versions\\.conf$"],
+      "description": "NVM script",
+      "matchStrings": ["(?:^|\\r?\\n)NVM_VERSION=(?<currentValue>[^\\s#]+)"],
+      "depNameTemplate": "nvm-sh/nvm",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README Python row",
+      "matchStrings": ["\\|\\s*Python\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "python-version"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README Go row",
+      "matchStrings": ["\\|\\s*Go\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
+      "depNameTemplate": "go",
+      "datasourceTemplate": "golang-version"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README Node row",
+      "matchStrings": ["\\|\\s*Node\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README Neovim row",
+      "matchStrings": ["\\|\\s*(?:NeoVim|Neovim)\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
+      "depNameTemplate": "neovim/neovim",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)README\\.md$"],
+      "description": "README NVM row",
+      "matchStrings": ["\\|\\s*NVM\\s*\\|\\s*(?<currentValue>[^\\s|]+)\\s*\\|"],
+      "depNameTemplate": "nvm-sh/nvm",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+
+  ],
+
+  "packageRules": [
+    {
+      "matchManagers": ["custom.regex"],
+      "ignoreUnstable": true,
+      "minimumReleaseAge": "3 days"
+    }
+  ]
+}
