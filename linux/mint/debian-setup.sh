@@ -88,7 +88,7 @@ fi
 
 # Shell hooks for current session
 export NVM_DIR="$HOME/.nvm"
-# shellcheck source=$HOME/.nvm/nvm.sh
+# shellcheck source=ci-stubs/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 if [[ -z "${NODE_VERSION:-}" ]]; then
@@ -147,7 +147,7 @@ section "Installing Java via SDKMAN"
 if [[ ! -d "${HOME}/.sdkman" ]]; then
   curl -s "https://get.sdkman.io" | bash
 fi
-# shellcheck source=$HOME/.sdkman/bin/sdkman-init.sh
+# shellcheck source=ci-stubs/sdkman-init.sh
 source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
 # Install configured Java distribution
