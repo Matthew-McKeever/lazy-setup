@@ -3,16 +3,14 @@ name: Test debian-setup.sh
 on:
   push:
     paths:
-      - 'debian-setup.sh'
-      - 'linux/**/versions.conf'
-      - '.github/workflows/debian-setup-test.yml'
-      - 'README.md'
+      - 'linux/mint/debian-setup.sh'
+      - 'linux/mint/versions.conf'
+      - '.github/workflows/test-debian-setup.yml'
   pull_request:
     paths:
-      - 'debian-setup.sh'
-      - 'linux/**/versions.conf'
-      - '.github/workflows/debian-setup-test.yml'
-      - 'README.md'
+      - 'linux/mint/debian-setup.sh'
+      - 'linux/mint/versions.conf'
+      - '.github/workflows/test-debian-setup.yml'
   workflow_dispatch: {}
 
 jobs:
@@ -37,7 +35,7 @@ jobs:
       TZ: UTC
       # Update this if your versions file lives elsewhere
       VERSIONS_FILE: linux/mint/versions.conf
-      SCRIPT: debian-setup.sh
+      SCRIPT: linux/mint/debian-setup.sh
     steps:
       - name: Checkout
         uses: actions/checkout@v4
