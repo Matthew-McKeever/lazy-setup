@@ -118,10 +118,16 @@ jobs:
           fi
 
           [ -n "$JAVA_VER_LABEL" ] || { echo "Unable to determine active Java version"; exit 1; }
+
+          WANT_JAVA_MAJOR="${WANT_JAVA%%[^0-9]*}"
+          if [ -z "$WANT_JAVA_MAJOR" ]; then
+            WANT_JAVA_MAJOR="$WANT_JAVA"
+          fi
+
           case "$JAVA_VER_LABEL" in
-            "$WANT_JAVA"|*"$WANT_JAVA"*) ;;
+            *"$WANT_JAVA_MAJOR"*) ;;
             *)
-              echo "Java mismatch: have $JAVA_VER_LABEL want $WANT_JAVA"
+              echo "Java mismatch: have $JAVA_VER_LABEL want major $WANT_JAVA_MAJOR (from $WANT_JAVA)"
               exit 1
               ;;
           esac
