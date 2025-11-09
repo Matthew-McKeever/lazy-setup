@@ -147,8 +147,12 @@ section "Installing Java via SDKMAN"
 if [[ ! -d "${HOME}/.sdkman" ]]; then
   curl -s "https://get.sdkman.io" | bash
 fi
+# SDKMAN init script references several variables before defining them, which
+# trips `set -u`. Temporarily relax undefined-variable checks while sourcing.
+set +u
 # shellcheck source=ci-stubs/sdkman-init.sh
 source "${HOME}/.sdkman/bin/sdkman-init.sh"
+set -u
 
 # Install configured Java distribution
 if [[ -z "${JAVA_VERSION:-}" ]]; then
