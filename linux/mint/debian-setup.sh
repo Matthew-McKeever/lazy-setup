@@ -119,6 +119,30 @@ fi
 
 ok "Java: $(java -version 2>&1 | head -n1 || echo missing)"
 
+### ───────────────────────── Neovim ─────────────────────────
+section "Installing Neovim"
+NEOVIM_VERSION="${NEOVIM_VERSION:-0.12.0}"
+NVIM_TGZ="nvim-linux64.tar.gz"
+NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/${NVIM_TGZ}"
+
+# Fetch tarball
+if [[ ! -f "/tmp/${NVIM_TGZ}" ]]; then
+  curl -fsSL -o "/tmp/${NVIM_TGZ}" "${NVIM_URL}"
+fi
+
+# Remove any existing install to avoid stale binaries
+if [[ -d /usr/local/nvim-linux64 ]]; then
+  sudo rm -rf /usr/local/nvim-linux64
+fi
+
+# Extract fresh copy under /usr/local
+sudo tar -C /usr/local -xzf "/tmp/${NVIM_TGZ}"
+
+# Ensure nvim is on PATH
+sudo ln -sf /usr/local/nvim-linux64/bin/nvim /usr/local/bin/nvim
+
+ok "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
+
 ### ───────────────────────── post-check ─────────────────────────
 section "Versions summary"
 echo "Python: $(python3 --version 2>/dev/null || echo missing)"
@@ -129,6 +153,7 @@ echo "pnpm:   $(pnpm -v 2>/dev/null || echo missing)"
 echo "yarn:   $(yarn -v 2>/dev/null || echo missing)"
 echo "Go:     $(go version 2>/dev/null || echo missing)"
 echo "Java:   $(java -version 2>&1 | head -n1 || echo missing)"
+echo "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
 section "Done"
 echo "Open a new terminal or run:  exec bash -l"
