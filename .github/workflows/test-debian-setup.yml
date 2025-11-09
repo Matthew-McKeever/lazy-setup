@@ -30,6 +30,9 @@ jobs:
     container:
       image: debian:12-slim
       options: --init
+    defaults:
+      run:
+        shell: bash
     env:
       DEBIAN_FRONTEND: noninteractive
       TZ: UTC
