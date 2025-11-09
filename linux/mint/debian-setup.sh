@@ -167,8 +167,6 @@ ok "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
 ### ───────────────────────── post-check ─────────────────────────
 section "Versions summary"
-echo "Python (${selected_python_cmd}): $(command -v "$selected_python_cmd" >/dev/null 2>&1 && "$selected_python_cmd" --version 2>/dev/null || echo missing)"
-echo "pipx:   $(pipx --version 2>/dev/null || echo missing)"
 echo "Node (${NODE_VERSION:-unset}):   $(node -v 2>/dev/null || echo missing)"
 echo "npm:    $(npm -v 2>/dev/null || echo missing)"
 echo "pnpm:   $(pnpm -v 2>/dev/null || echo missing)"
