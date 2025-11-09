@@ -165,7 +165,7 @@ ok "Java: $(java -version 2>&1 | head -n1 || echo missing)"
 
 ### ───────────────────────── Neovim ─────────────────────────
 section "Installing Neovim"
-NEOVIM_VERSION="${NEOVIM_VERSION:-0.12.0}"
+NEOVIM_VERSION="${NEOVIM_VERSION:-0.11.5}"
 NVIM_TGZ="nvim-linux64.tar.gz"
 NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/${NVIM_TGZ}"
 
