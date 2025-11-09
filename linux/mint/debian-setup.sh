@@ -169,7 +169,7 @@ NEOVIM_VERSION="${NEOVIM_VERSION:-0.11.5}"
 nvim_arch="$(uname -m)"
 case "$nvim_arch" in
   x86_64|amd64)
-    NVIM_TGZ="nvim-linux64.tar.gz"
+    NVIM_TGZ="nvim-linux-x86_64.tar.gz"
     ;;
   arm64|aarch64)
     NVIM_TGZ="nvim-linux-arm64.tar.gz"
