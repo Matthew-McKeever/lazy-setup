@@ -43,17 +43,18 @@ selected_python_venv_pkg="python3-venv"
 
 if [[ -n "${PYTHON_VERSION:-}" ]]; then
   candidate_python_pkg="python${PYTHON_VERSION}"
-  if apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
-    selected_python_pkg="$candidate_python_pkg"
-    selected_python_cmd="$candidate_python_pkg"
-    candidate_python_venv_pkg="${candidate_python_pkg}-venv"
-    if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
-      selected_python_venv_pkg="$candidate_python_venv_pkg"
-    else
-      notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
-    fi
+  if ! apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
+    echo "Requested ${candidate_python_pkg} is not available via APT. Update PYTHON_VERSION in versions.conf or add a repo that provides it." >&2
+    exit 1
+  fi
+
+  selected_python_pkg="$candidate_python_pkg"
+  selected_python_cmd="$candidate_python_pkg"
+  candidate_python_venv_pkg="${candidate_python_pkg}-venv"
+  if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
+    selected_python_venv_pkg="$candidate_python_venv_pkg"
   else
-    notice "${candidate_python_pkg} not available via APT; falling back to python3"
+    notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
   fi
 else
   notice "PYTHON_VERSION not set; installing distro python3"
