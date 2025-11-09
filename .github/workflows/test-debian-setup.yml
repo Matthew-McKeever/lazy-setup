@@ -77,7 +77,6 @@ jobs:
 
           want() { grep -E "^$1=" "$VCONF" | head -n1 | cut -d= -f2- | tr -d ' \t'; }
 
-          WANT_PY="$(want PYTHON_VERSION)"
           WANT_GO="$(want GO_VERSION)"
           WANT_NODE="$(want NODE_VERSION)"
           WANT_NVIM="$(want NEOVIM_VERSION)"
@@ -85,12 +84,8 @@ jobs:
           WANT_JAVA="$(want JAVA_VERSION)"
 
           echo "Expected versions from $VCONF:"
-          printf '  PYTHON=%s\n  GO=%s\n  NODE=%s\n  NEOVIM=%s\n  NVM=%s\n  JAVA=%s\n' \
-            "$WANT_PY" "$WANT_GO" "$WANT_NODE" "$WANT_NVIM" "$WANT_NVM" "$WANT_JAVA"
-
-          # Python
-          PY_VER="$(python3 --version 2>/dev/null | awk '{print $2}')"
-          [[ "$PY_VER" == "$WANT_PY"* ]] || { echo "Python mismatch: have $PY_VER want $WANT_PY"; exit 1; }
+          printf '  GO=%s\n  NODE=%s\n  NEOVIM=%s\n  NVM=%s\n  JAVA=%s\n' \
+            "$WANT_GO" "$WANT_NODE" "$WANT_NVIM" "$WANT_NVM" "$WANT_JAVA"
 
           # Go
           GO_VER="$(go version 2>/dev/null | awk '{print $3}' | sed 's/^go//')"

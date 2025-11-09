@@ -34,42 +34,6 @@ sudo apt-get install -y \
 
 ok "Base tools installed"
 
-### ───────────────────────── Python ─────────────────────────
-section "Installing Python, pip, venv, pipx"
-python_pkgs=(python3 python3-pip pipx)
-selected_python_pkg="python3"
-selected_python_cmd="python3"
-selected_python_venv_pkg="python3-venv"
-
-if [[ -n "${PYTHON_VERSION:-}" ]]; then
-  candidate_python_pkg="python${PYTHON_VERSION}"
-  if ! apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
-    echo "Requested ${candidate_python_pkg} is not available via APT. Update PYTHON_VERSION in versions.conf or add a repo that provides it." >&2
-    exit 1
-  fi
-
-  selected_python_pkg="$candidate_python_pkg"
-  selected_python_cmd="$candidate_python_pkg"
-  candidate_python_venv_pkg="${candidate_python_pkg}-venv"
-  if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
-    selected_python_venv_pkg="$candidate_python_venv_pkg"
-  else
-    notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
-  fi
-else
-  notice "PYTHON_VERSION not set; installing distro python3"
-fi
-
-python_pkgs+=("$selected_python_pkg" "$selected_python_venv_pkg")
-sudo apt-get install -y "${python_pkgs[@]}"
-
-# Ensure pipx on PATH
-if ! grep -q 'export PATH=.*/.local/bin' "${HOME}/.bashrc" 2>/dev/null; then
-  echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "${HOME}/.bashrc"
-  ok "Added ~/.local/bin to PATH in .bashrc"
-fi
-ok "Python (${selected_python_cmd}): $(command -v "$selected_python_cmd" >/dev/null 2>&1 && "$selected_python_cmd" --version 2>/dev/null || echo missing), pipx: $(pipx --version 2>/dev/null || echo missing)"
-
 ### ───────────────────────── Node (NVM + Corepack) ─────────────────────────
 section "Installing Node via NVM and enabling Corepack (pnpm/yarn)"
 if [[ -z "${NVM_VERSION:-}" ]]; then
