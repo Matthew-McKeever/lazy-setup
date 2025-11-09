@@ -79,10 +79,11 @@ jobs:
           WANT_NODE="$(want NODE_VERSION)"
           WANT_NVIM="$(want NEOVIM_VERSION)"
           WANT_NVM="$(want NVM_VERSION)"
+          WANT_JAVA="$(want JAVA_VERSION)"
 
           echo "Expected versions from $VCONF:"
-          printf '  PYTHON=%s\n  GO=%s\n  NODE=%s\n  NEOVIM=%s\n  NVM=%s\n' \
-            "$WANT_PY" "$WANT_GO" "$WANT_NODE" "$WANT_NVIM" "$WANT_NVM"
+          printf '  PYTHON=%s\n  GO=%s\n  NODE=%s\n  NEOVIM=%s\n  NVM=%s\n  JAVA=%s\n' \
+            "$WANT_PY" "$WANT_GO" "$WANT_NODE" "$WANT_NVIM" "$WANT_NVM" "$WANT_JAVA"
 
           # Python
           PY_VER="$(python3 --version 2>/dev/null | awk '{print $2}')"
@@ -102,6 +103,30 @@ jobs:
           WANT_NVM_STRIPPED="$(printf '%s' "$WANT_NVM" | sed 's/^v//')"
           [ -n "$NVM_VER" ] || { echo "nvm not available in PATH"; exit 1; }
           [[ "$NVM_VER" == "$WANT_NVM_STRIPPED"* ]] || { echo "NVM mismatch: have $NVM_VER want $WANT_NVM"; exit 1; }
+
+          # Java (managed via SDKMAN)
+          if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+            # shellcheck source=/dev/null
+            . "$HOME/.sdkman/bin/sdkman-init.sh"
+          fi
+
+          JAVA_VER_LABEL=""
+          if command -v sdk >/dev/null 2>&1; then
+            SDK_CURRENT_JAVA_OUTPUT="$(sdk current java 2>/dev/null || true)"
+            JAVA_VER_LABEL="$(printf '%s\n' "$SDK_CURRENT_JAVA_OUTPUT" | awk 'NF{print $NF; exit}')"
+          fi
+          if [ -z "$JAVA_VER_LABEL" ] && command -v java >/dev/null 2>&1; then
+            JAVA_VER_LABEL="$(java -version 2>&1 | head -n1)"
+          fi
+
+          [ -n "$JAVA_VER_LABEL" ] || { echo "Unable to determine active Java version"; exit 1; }
+          case "$JAVA_VER_LABEL" in
+            "$WANT_JAVA"|*"$WANT_JAVA"*) ;;
+            *)
+              echo "Java mismatch: have $JAVA_VER_LABEL want $WANT_JAVA"
+              exit 1
+              ;;
+          esac
 
           # Node (if installed via nvm, ensure it's the default shell has it)
           if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
