@@ -43,17 +43,18 @@ selected_python_venv_pkg="python3-venv"
 
 if [[ -n "${PYTHON_VERSION:-}" ]]; then
   candidate_python_pkg="python${PYTHON_VERSION}"
-  if apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
-    selected_python_pkg="$candidate_python_pkg"
-    selected_python_cmd="$candidate_python_pkg"
-    candidate_python_venv_pkg="${candidate_python_pkg}-venv"
-    if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
-      selected_python_venv_pkg="$candidate_python_venv_pkg"
-    else
-      notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
-    fi
+  if ! apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
+    echo "Requested ${candidate_python_pkg} is not available via APT. Update PYTHON_VERSION in versions.conf or add a repo that provides it." >&2
+    exit 1
+  fi
+
+  selected_python_pkg="$candidate_python_pkg"
+  selected_python_cmd="$candidate_python_pkg"
+  candidate_python_venv_pkg="${candidate_python_pkg}-venv"
+  if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
+    selected_python_venv_pkg="$candidate_python_venv_pkg"
   else
-    notice "${candidate_python_pkg} not available via APT; falling back to python3"
+    notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
   fi
 else
   notice "PYTHON_VERSION not set; installing distro python3"
@@ -165,8 +166,21 @@ ok "Java: $(java -version 2>&1 | head -n1 || echo missing)"
 
 ### ───────────────────────── Neovim ─────────────────────────
 section "Installing Neovim"
-NEOVIM_VERSION="${NEOVIM_VERSION:-0.12.0}"
-NVIM_TGZ="nvim-linux64.tar.gz"
+NEOVIM_VERSION="${NEOVIM_VERSION:-0.11.5}"
+nvim_arch="$(uname -m)"
+case "$nvim_arch" in
+  x86_64|amd64)
+    NVIM_TGZ="nvim-linux-x86_64.tar.gz"
+    ;;
+  arm64|aarch64)
+    NVIM_TGZ="nvim-linux-arm64.tar.gz"
+    ;;
+  *)
+    echo "Unsupported architecture: $nvim_arch" >&2
+    exit 1
+    ;;
+esac
+NVIM_DIR="${NVIM_TGZ%.tar.gz}"
 NVIM_URL="https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/${NVIM_TGZ}"
 
 # Fetch tarball
@@ -175,15 +189,15 @@ if [[ ! -f "/tmp/${NVIM_TGZ}" ]]; then
 fi
 
 # Remove any existing install to avoid stale binaries
-if [[ -d /usr/local/nvim-linux64 ]]; then
-  sudo rm -rf /usr/local/nvim-linux64
+if [[ -d "/usr/local/${NVIM_DIR}" ]]; then
+  sudo rm -rf "/usr/local/${NVIM_DIR}"
 fi
 
 # Extract fresh copy under /usr/local
 sudo tar -C /usr/local -xzf "/tmp/${NVIM_TGZ}"
 
 # Ensure nvim is on PATH
-sudo ln -sf /usr/local/nvim-linux64/bin/nvim /usr/local/bin/nvim
+sudo ln -sf "/usr/local/${NVIM_DIR}/bin/nvim" /usr/local/bin/nvim
 
 ok "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
