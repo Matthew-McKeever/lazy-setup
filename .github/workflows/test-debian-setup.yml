@@ -83,13 +83,26 @@ jobs:
           WANT_NVM="$(want NVM_VERSION)"
           WANT_JAVA="$(want JAVA_VERSION)"
 
-          echo "Expected versions from $VCONF:"
-          printf '  GO=%s\n  NODE=%s\n  NEOVIM=%s\n  NVM=%s\n  JAVA=%s\n' \
-            "$WANT_GO" "$WANT_NODE" "$WANT_NVIM" "$WANT_NVM" "$WANT_JAVA"
+          declare -A EXPECTED=()
+          EXPECTED[GO]="$WANT_GO"
+          EXPECTED[NODE]="$WANT_NODE"
+          EXPECTED[NEOVIM]="$WANT_NVIM"
+          EXPECTED[NVM]="$WANT_NVM"
+          EXPECTED[JAVA]="$WANT_JAVA"
+
+          declare -A ACTUAL=()
+          declare -a MISMATCHES=()
+          TOOL_ORDER=(GO NODE NEOVIM NVM JAVA)
 
           # Go
           GO_VER="$(go version 2>/dev/null | awk '{print $3}' | sed 's/^go//')"
-          [[ "$GO_VER" == "$WANT_GO"* ]] || { echo "Go mismatch: have $GO_VER want $WANT_GO"; exit 1; }
+          if [ -z "$GO_VER" ]; then
+            GO_VER="(not found)"
+            MISMATCHES+=("Go not installed")
+          elif [[ "$GO_VER" != "$WANT_GO"* ]]; then
+            MISMATCHES+=("Go mismatch: have $GO_VER want $WANT_GO")
+          fi
+          ACTUAL[GO]="$GO_VER"
 
           # NVM (may need sourcing)
           if [ -s "$HOME/.nvm/nvm.sh" ]; then
@@ -99,8 +112,13 @@ jobs:
           NVM_VER_RAW="$(command -v nvm >/dev/null 2>&1 && nvm --version || true)"
           NVM_VER="$(printf '%s' "$NVM_VER_RAW" | sed 's/^v//')"
           WANT_NVM_STRIPPED="$(printf '%s' "$WANT_NVM" | sed 's/^v//')"
-          [ -n "$NVM_VER" ] || { echo "nvm not available in PATH"; exit 1; }
-          [[ "$NVM_VER" == "$WANT_NVM_STRIPPED"* ]] || { echo "NVM mismatch: have $NVM_VER want $WANT_NVM"; exit 1; }
+          if [ -z "$NVM_VER" ]; then
+            NVM_VER="(not found)"
+            MISMATCHES+=("nvm not available in PATH")
+          elif [[ "$NVM_VER" != "$WANT_NVM_STRIPPED"* ]]; then
+            MISMATCHES+=("NVM mismatch: have $NVM_VER want $WANT_NVM")
+          fi
+          ACTUAL[NVM]="$NVM_VER"
 
           # Java (managed via SDKMAN)
           if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
@@ -117,14 +135,25 @@ jobs:
             JAVA_VER_LABEL="$(java -version 2>&1 | head -n1)"
           fi
 
-          [ -n "$JAVA_VER_LABEL" ] || { echo "Unable to determine active Java version"; exit 1; }
-          case "$JAVA_VER_LABEL" in
-            "$WANT_JAVA"|*"$WANT_JAVA"*) ;;
-            *)
-              echo "Java mismatch: have $JAVA_VER_LABEL want $WANT_JAVA"
-              exit 1
-              ;;
-          esac
+          if [ -z "$JAVA_VER_LABEL" ]; then
+            JAVA_VER_LABEL="(not found)"
+            MISMATCHES+=("Unable to determine active Java version")
+          fi
+
+          WANT_JAVA_MAJOR="${WANT_JAVA%%[^0-9]*}"
+          if [ -z "$WANT_JAVA_MAJOR" ]; then
+            WANT_JAVA_MAJOR="$WANT_JAVA"
+          fi
+
+          if [ "$JAVA_VER_LABEL" != "(not found)" ]; then
+            case "$JAVA_VER_LABEL" in
+              *"$WANT_JAVA_MAJOR"*) ;;
+              *)
+                MISMATCHES+=("Java mismatch: have $JAVA_VER_LABEL want major $WANT_JAVA_MAJOR (from $WANT_JAVA)")
+                ;;
+            esac
+          fi
+          ACTUAL[JAVA]="$JAVA_VER_LABEL"
 
           # Node (if installed via nvm, ensure it's the default shell has it)
           if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
@@ -133,15 +162,39 @@ jobs:
           NODE_VER_RAW="$(node -v 2>/dev/null || true)"
           NODE_VER="$(printf '%s' "$NODE_VER_RAW" | sed 's/^v//')"
           WANT_NODE_STRIPPED="$(printf '%s' "$WANT_NODE" | sed 's/^v//')"
-          [ -n "$NODE_VER" ] || { echo "node not available in PATH"; exit 1; }
-          [[ "$NODE_VER" == "$WANT_NODE_STRIPPED"* ]] || { echo "Node mismatch: have $NODE_VER want $WANT_NODE"; exit 1; }
+          if [ -z "$NODE_VER" ]; then
+            NODE_VER="(not found)"
+            MISMATCHES+=("node not available in PATH")
+          elif [[ "$NODE_VER" != "$WANT_NODE_STRIPPED"* ]]; then
+            MISMATCHES+=("Node mismatch: have $NODE_VER want $WANT_NODE")
+          fi
+          ACTUAL[NODE]="$NODE_VER"
 
           # Neovim
           NVIM_VER_RAW="$(nvim --version 2>/dev/null | head -n1 | awk '{print $2}')"
           NVIM_VER="$(printf '%s' "$NVIM_VER_RAW" | sed 's/^v//')"
           WANT_NVIM_STRIPPED="$(printf '%s' "$WANT_NVIM" | sed 's/^v//')"
-          [ -n "$NVIM_VER" ] || { echo "nvim not available in PATH"; exit 1; }
-          [[ "$NVIM_VER" == "$WANT_NVIM_STRIPPED"* ]] || { echo "Neovim mismatch: have $NVIM_VER want $WANT_NVIM"; exit 1; }
+          if [ -z "$NVIM_VER" ]; then
+            NVIM_VER="(not found)"
+            MISMATCHES+=("nvim not available in PATH")
+          elif [[ "$NVIM_VER" != "$WANT_NVIM_STRIPPED"* ]]; then
+            MISMATCHES+=("Neovim mismatch: have $NVIM_VER want $WANT_NVIM")
+          fi
+          ACTUAL[NEOVIM]="$NVIM_VER"
+
+          echo "Installed versions summary:"
+          for tool in "${TOOL_ORDER[@]}"; do
+            printf '  %s: have %s (expected %s)\n' \
+              "$tool" "${ACTUAL[$tool]:-(not checked)}" "${EXPECTED[$tool]:-unknown}"
+          done
+
+          if [ "${#MISMATCHES[@]}" -gt 0 ]; then
+            echo "Version mismatches detected:"
+            for msg in "${MISMATCHES[@]}"; do
+              printf '  - %s\n' "$msg"
+            done
+            exit 1
+          fi
 
           echo "All version checks passed."
 
