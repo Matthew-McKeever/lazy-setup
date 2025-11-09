@@ -30,7 +30,7 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 | ------ | --------- |
 | Python | 3.12      |
 | Go     | 1.25.4    |
-| Node   | 22.11.0   |
+| Node   | 22.21.1   |
 | Java   | 21-tem    |
 | NeoVim | 0.12.0    |
 | NVM    | 0.40.3   |
