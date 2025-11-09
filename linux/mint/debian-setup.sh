@@ -9,7 +9,7 @@ set -euo pipefail
 
 CONFIG_FILE="$(dirname "$0")/versions.conf"
 if [[ -f "$CONFIG_FILE" ]]; then
-  # shellcheck disable=SC1091
+  # shellcheck source=linux/mint/versions.conf
   source "$CONFIG_FILE"
 else
   echo "Missing versions.conf — create one before running."
@@ -67,7 +67,7 @@ sudo apt-get install -y "${python_pkgs[@]}"
 
 # Ensure pipx on PATH
 if ! grep -q 'export PATH=.*/.local/bin' "${HOME}/.bashrc" 2>/dev/null; then
-  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${HOME}/.bashrc"
+  echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "${HOME}/.bashrc"
   ok "Added ~/.local/bin to PATH in .bashrc"
 fi
 ok "Python (${selected_python_cmd}): $(command -v "$selected_python_cmd" >/dev/null 2>&1 && "$selected_python_cmd" --version 2>/dev/null || echo missing), pipx: $(pipx --version 2>/dev/null || echo missing)"
@@ -88,7 +88,7 @@ fi
 
 # Shell hooks for current session
 export NVM_DIR="$HOME/.nvm"
-# shellcheck disable=SC1090
+# shellcheck source=$HOME/.nvm/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 if [[ -z "${NODE_VERSION:-}" ]]; then
@@ -130,8 +130,8 @@ sudo tar -C /usr/local -xzf "/tmp/${GO_TGZ}"
 # Ensure PATH and GOPATH
 if ! grep -q '/usr/local/go/bin' "${HOME}/.bashrc"; then
   {
-    echo 'export GOPATH="$HOME/go"'
-    echo 'export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"'
+    echo "export GOPATH=\"\$HOME/go\""
+    echo "export PATH=\"/usr/local/go/bin:\$GOPATH/bin:\$PATH\""
   } >> "${HOME}/.bashrc"
   ok "Added Go PATH and GOPATH to .bashrc"
 fi
@@ -147,7 +147,7 @@ section "Installing Java via SDKMAN"
 if [[ ! -d "${HOME}/.sdkman" ]]; then
   curl -s "https://get.sdkman.io" | bash
 fi
-# shellcheck disable=SC1090
+# shellcheck source=$HOME/.sdkman/bin/sdkman-init.sh
 source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
 # Install configured Java distribution
