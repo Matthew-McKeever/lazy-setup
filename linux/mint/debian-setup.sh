@@ -39,20 +39,51 @@ ok "Base tools installed"
 
 ### ───────────────────────── Python ─────────────────────────
 section "Installing Python, pip, venv, pipx"
-sudo apt-get install -y python3 python3-pip python3-venv pipx
+python_pkgs=(python3 python3-pip pipx)
+selected_python_pkg="python3"
+selected_python_cmd="python3"
+selected_python_venv_pkg="python3-venv"
+
+if [[ -n "${PYTHON_VERSION:-}" ]]; then
+  candidate_python_pkg="python${PYTHON_VERSION}"
+  if apt-cache show "$candidate_python_pkg" >/dev/null 2>&1; then
+    selected_python_pkg="$candidate_python_pkg"
+    selected_python_cmd="$candidate_python_pkg"
+    candidate_python_venv_pkg="${candidate_python_pkg}-venv"
+    if apt-cache show "$candidate_python_venv_pkg" >/dev/null 2>&1; then
+      selected_python_venv_pkg="$candidate_python_venv_pkg"
+    else
+      notice "${candidate_python_venv_pkg} not available; falling back to python3-venv"
+    fi
+  else
+    notice "${candidate_python_pkg} not available via APT; falling back to python3"
+  fi
+else
+  notice "PYTHON_VERSION not set; installing distro python3"
+fi
+
+python_pkgs+=("$selected_python_pkg" "$selected_python_venv_pkg")
+sudo apt-get install -y "${python_pkgs[@]}"
+
 # Ensure pipx on PATH
 if ! grep -q 'export PATH=.*/.local/bin' "${HOME}/.bashrc" 2>/dev/null; then
   echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${HOME}/.bashrc"
   ok "Added ~/.local/bin to PATH in .bashrc"
 fi
-ok "Python: $(python3 --version 2>/dev/null || echo missing), pipx: $(pipx --version 2>/dev/null || echo missing)"
+ok "Python (${selected_python_cmd}): $(command -v "$selected_python_cmd" >/dev/null 2>&1 && "$selected_python_cmd" --version 2>/dev/null || echo missing), pipx: $(pipx --version 2>/dev/null || echo missing)"
 
 ### ───────────────────────── Node (NVM + Corepack) ─────────────────────────
 section "Installing Node via NVM and enabling Corepack (pnpm/yarn)"
+if [[ -z "${NVM_VERSION:-}" ]]; then
+  echo "NVM_VERSION must be set in versions.conf" >&2
+  exit 1
+fi
+
 # NVM install if missing
-if ! command -v nvm >/dev/null 2>&1; then
-  export NVM_VERSION="v0.39.7"
-  curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
+if [[ ! -d "${HOME}/.nvm" ]]; then
+  nvm_tag="${NVM_VERSION}"
+  [[ "$nvm_tag" == v* ]] || nvm_tag="v${nvm_tag}"
+  curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/${nvm_tag}/install.sh" | bash
 fi
 
 # Shell hooks for current session
@@ -60,9 +91,14 @@ export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC1090
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# Install latest LTS and set default
-nvm install --lts
-nvm alias default 'lts/*'
+if [[ -z "${NODE_VERSION:-}" ]]; then
+  echo "NODE_VERSION must be set in versions.conf" >&2
+  exit 1
+fi
+
+nvm install "$NODE_VERSION"
+nvm alias default "$NODE_VERSION"
+nvm use "$NODE_VERSION" >/dev/null 2>&1 || true
 # Enable Corepack-managed pm (pnpm, yarn)
 corepack enable || true
 corepack prepare pnpm@latest --activate || true
@@ -72,7 +108,11 @@ ok "Node: $(node -v 2>/dev/null || echo missing), npm: $(npm -v 2>/dev/null || e
 
 ### ───────────────────────── Go (tarball) ─────────────────────────
 section "Installing Go (official tarball)"
-GO_VERSION="${GO_VERSION:-1.23.3}"   # change if you want a specific version
+if [[ -z "${GO_VERSION:-}" ]]; then
+  echo "GO_VERSION must be set in versions.conf" >&2
+  exit 1
+fi
+
 GO_TGZ="go${GO_VERSION}.linux-amd64.tar.gz"
 
 # Remove old /usr/local/go if present
@@ -102,20 +142,22 @@ export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
 
 ok "Go: $(go version 2>/dev/null || echo missing)"
 
-### ───────────────────────── Java (SDKMAN + Temurin 21) ─────────────────────────
-section "Installing Java via SDKMAN (Temurin 21 LTS)"
+### ───────────────────────── Java (SDKMAN) ─────────────────────────
+section "Installing Java via SDKMAN"
 if [[ ! -d "${HOME}/.sdkman" ]]; then
   curl -s "https://get.sdkman.io" | bash
 fi
 # shellcheck disable=SC1090
 source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
-# Install Temurin 21 (LTS)
-if ! sdk current java | grep -q '21'; then
-  # List identifiers: sdk list java | grep -i temurin
-  sdk install java 21-tem || sdk install java 21.0.*/temurin || true
-  sdk default java || true
+# Install configured Java distribution
+if [[ -z "${JAVA_VERSION:-}" ]]; then
+  echo "JAVA_VERSION must be set in versions.conf" >&2
+  exit 1
 fi
+
+sdk install java "$JAVA_VERSION"
+sdk default java "$JAVA_VERSION"
 
 ok "Java: $(java -version 2>&1 | head -n1 || echo missing)"
 
@@ -145,9 +187,9 @@ ok "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
 ### ───────────────────────── post-check ─────────────────────────
 section "Versions summary"
-echo "Python: $(python3 --version 2>/dev/null || echo missing)"
+echo "Python (${selected_python_cmd}): $(command -v "$selected_python_cmd" >/dev/null 2>&1 && "$selected_python_cmd" --version 2>/dev/null || echo missing)"
 echo "pipx:   $(pipx --version 2>/dev/null || echo missing)"
-echo "Node:   $(node -v 2>/dev/null || echo missing)"
+echo "Node (${NODE_VERSION:-unset}):   $(node -v 2>/dev/null || echo missing)"
 echo "npm:    $(npm -v 2>/dev/null || echo missing)"
 echo "pnpm:   $(pnpm -v 2>/dev/null || echo missing)"
 echo "yarn:   $(yarn -v 2>/dev/null || echo missing)"
