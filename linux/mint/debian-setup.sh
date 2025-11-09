@@ -145,11 +145,11 @@ if [[ ! -d "${HOME}/.sdkman" ]]; then
   curl -s "https://get.sdkman.io" | bash
 fi
 # SDKMAN init script references several variables before defining them, which
-# trips `set -u`. Temporarily relax undefined-variable checks while sourcing.
+# trips `set -u`. Temporarily relax undefined-variable checks while sourcing
+# and while running `sdk` commands that read the same variables.
 set +u
 # shellcheck source=ci-stubs/sdkman-init.sh
 source "${HOME}/.sdkman/bin/sdkman-init.sh"
-set -u
 
 # Install configured Java distribution
 if [[ -z "${JAVA_VERSION:-}" ]]; then
@@ -159,6 +159,7 @@ fi
 
 sdk install java "$JAVA_VERSION"
 sdk default java "$JAVA_VERSION"
+set -u
 
 ok "Java: $(java -version 2>&1 | head -n1 || echo missing)"
 
