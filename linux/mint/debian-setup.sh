@@ -4,9 +4,6 @@
 
 set -euo pipefail
 
-#!/usr/bin/env bash
-set -euo pipefail
-
 CONFIG_FILE="$(dirname "$0")/versions.conf"
 if [[ -f "$CONFIG_FILE" ]]; then
   # shellcheck source=linux/mint/versions.conf
