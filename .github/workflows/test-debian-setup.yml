@@ -30,7 +30,7 @@ jobs:
     name: Install and verify on Debian
     runs-on: ubuntu-latest
     container:
-      image: debian:12-slim
+      image: debian:13-slim
       options: --init
     defaults:
       run:
