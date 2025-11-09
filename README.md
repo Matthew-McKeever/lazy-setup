@@ -28,7 +28,7 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 
 | Tool   | Version   |
 | ------ | --------- |
-| Python | 3.12      |
+| Python | 3.14      |
 | Go     | 1.25.4    |
 | Node   | 22.11.0   |
 | Java   | 21-tem    |
