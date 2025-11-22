@@ -29,9 +29,21 @@ section "Updating pacman and installing base tools"
 sudo pacman -Syu --noconfirm
 sudo pacman -S --needed --noconfirm \
   base-devel git curl wget unzip zip tar jq pkgconf \
-  gnupg lsb-release
+  gnupg lsb-release python python-pip
 
-ok "Base tools installed"
+ok "Base tools and Python installed"
+
+### ───────────────────────── Python extras ─────────────────────────
+section "Installing Python tools: pipx and poetry"
+# pipx for isolated CLI tools
+python -m pip install --user --upgrade pip
+python -m pip install --user pipx
+python -m pipx ensurepath
+
+# Optional: install poetry for dependency management
+python -m pipx install poetry
+
+ok "Python: $(python --version), pip: $(pip --version), pipx: $(pipx --version), poetry: $(poetry --version 2>/dev/null || echo missing)"
 
 ### ───────────────────────── Node (NVM + Corepack) ─────────────────────────
 section "Installing Node via NVM and enabling Corepack (pnpm/yarn)"
@@ -148,13 +160,17 @@ ok "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
 ### ───────────────────────── post-check ─────────────────────────
 section "Versions summary"
-echo "Node (${NODE_VERSION:-unset}):   $(node -v 2>/dev/null || echo missing)"
-echo "npm:    $(npm -v 2>/dev/null || echo missing)"
-echo "pnpm:   $(pnpm -v 2>/dev/null || echo missing)"
-echo "yarn:   $(yarn -v 2>/dev/null || echo missing)"
-echo "Go:     $(go version 2>/dev/null || echo missing)"
-echo "Java:   $(java -version 2>&1 | head -n1 || echo missing)"
-echo "Neovim: $(nvim --version 2>/dev/null | head -n1 || echo missing)"
+echo "Python:  $(python --version 2>/dev/null || echo missing)"
+echo "pip:     $(pip --version 2>/dev/null || echo missing)"
+echo "pipx:    $(pipx --version 2>/dev/null || echo missing)"
+echo "Poetry:  $(poetry --version 2>/dev/null || echo missing)"
+echo "Node (${NODE_VERSION:-unset}): $(node -v 2>/dev/null || echo missing)"
+echo "npm:     $(npm -v 2>/dev/null || echo missing)"
+echo "pnpm:    $(pnpm -v 2>/dev/null || echo missing)"
+echo "yarn:    $(yarn -v 2>/dev/null || echo missing)"
+echo "Go:      $(go version 2>/dev/null || echo missing)"
+echo "Java:    $(java -version 2>&1 | head -n1 || echo missing)"
+echo "Neovim:  $(nvim --version 2>/dev/null | head -n1 || echo missing)"
 
 section "Done"
 echo "Open a new terminal or run:  exec bash -l"
