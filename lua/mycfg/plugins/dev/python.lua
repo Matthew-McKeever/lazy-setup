@@ -2,7 +2,6 @@ return {
   -- Virtual environment selector
   {
     "linux-cultist/venv-selector.nvim",
-    branch = "regexp", -- or "main" depending on the version you use
     dependencies = { "nvim-telescope/telescope.nvim" },
     ft = { "python" },
     opts = {
@@ -34,6 +33,15 @@ return {
       -- fallback if no venv selected
       if not path or path == "" then
         path = vim.fn.expand("~/.virtualenvs/debugpy/bin/python")
+
+        -- Check if the debugpy path exists, otherwise use system python
+        if vim.fn.executable(path) == 0 then
+          path = vim.fn.exepath("python3") or vim.fn.exepath("python")
+          if path == "" then
+            vim.notify("No Python interpreter found for dap-python", vim.log.levels.WARN)
+            return
+          end
+        end
       end
 
       require("dap-python").setup(path)
@@ -41,6 +49,7 @@ return {
   },
 
   -- Testing framework (neotest + neotest-python)
+  -- Note: Same keybindings as web.lua but won't conflict due to filetype-specific loading
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -79,13 +88,25 @@ return {
         return
       end
 
-      null_ls.setup({
-        sources = {
-          null_ls.builtins.formatting.black,
-          null_ls.builtins.formatting.isort,
-          null_ls.builtins.diagnostics.flake8,
-        },
-      })
+      -- Only add sources for tools that are actually installed
+      local sources = {}
+
+      if vim.fn.executable("black") == 1 then
+        table.insert(sources, null_ls.builtins.formatting.black)
+      end
+
+      if vim.fn.executable("isort") == 1 then
+        table.insert(sources, null_ls.builtins.formatting.isort)
+      end
+
+      if vim.fn.executable("flake8") == 1 then
+        table.insert(sources, null_ls.builtins.diagnostics.flake8)
+      end
+
+      -- Only setup if we have at least one source
+      if #sources > 0 then
+        null_ls.setup({ sources = sources })
+      end
     end,
   },
 }

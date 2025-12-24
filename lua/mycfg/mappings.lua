@@ -6,7 +6,8 @@ map("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
 
 -- Save / quit shortcuts
 map("n", "<leader>w", ":w<CR>", opts)
-map("n", "<leader>q", ":q<CR>", opts)
+map("n", "<leader>q", ":confirm q<CR>", opts)  -- confirm prompts if unsaved changes
+map("n", "<leader>Q", ":q!<CR>", opts)  -- force quit without saving
 
 -- Clear search highlight
 map("n", "<leader>h", ":nohlsearch<CR>", opts)

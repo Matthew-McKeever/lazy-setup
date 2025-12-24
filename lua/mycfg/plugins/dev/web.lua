@@ -50,6 +50,7 @@ return {
 
   ---------------------------------------------------------------------------
   -- Jest testing via neotest (JS/TS)
+  -- Note: Same keybindings as python.lua but won't conflict due to filetype-specific loading
   ---------------------------------------------------------------------------
   {
     "nvim-neotest/neotest",

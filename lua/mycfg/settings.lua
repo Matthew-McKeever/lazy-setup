@@ -1,7 +1,3 @@
--- Leader key must be set before plugins load
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
 -- General editing behavior
 vim.opt.number = true                -- show line numbers
 vim.opt.relativenumber = true        -- relative numbers for navigation
@@ -50,4 +46,7 @@ vim.opt.foldmethod = "indent"
 vim.opt.foldlevel = 99
 
 --set colour scheme
-pcall(vim.cmd, "colorscheme wal.vim")
+if not pcall(vim.cmd, "colorscheme wal.vim") then
+  -- Fallback to habamax if wal.vim isn't available
+  vim.cmd("colorscheme habamax")
+end

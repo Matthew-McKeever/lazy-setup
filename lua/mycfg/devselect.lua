@@ -27,7 +27,7 @@ end
 
 -- Option 2: automatic detection by project folder name
 if devmode == "" then
-  local cwd = vim.loop.cwd()
+  local cwd = vim.uv.cwd()
   if cwd:match("python") or vim.fn.glob("**/requirements%.txt") ~= "" then
     add_plugins("mycfg.plugins.dev.python")
   elseif cwd:match("go") or vim.fn.glob("**/go%.mod") ~= "" then

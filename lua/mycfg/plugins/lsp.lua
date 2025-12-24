@@ -5,59 +5,80 @@ return {
   -- Mason + LSP bridge
   {
     "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim" },
+    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
     opts = {
-      ensure_installed = { "lua_ls", "gopls", "pyright", "emmet_language_server" },      
+      ensure_installed = {
+        "lua_ls",
+        "gopls",
+        "pyright",
+        "emmet_language_server",
+        "ts_ls",  -- TypeScript/JavaScript
+        "clangd",  -- C/C++
+        "rust_analyzer",  -- Rust
+      },
       automatic_installation = true,
       handlers = {
         -- Default handler for any installed server
         function(server)
-          vim.lsp.start(vim.lsp.config(server))
+          require("lspconfig")[server].setup({})
         end,
 
         -- Server-specific configs
         ["lua_ls"] = function()
-          vim.lsp.start(vim.lsp.config("lua_ls", {
+          require("lspconfig").lua_ls.setup({
             settings = {
               Lua = {
                 diagnostics = { globals = { "vim" } },
                 workspace = { checkThirdParty = false },
               },
             },
-          }))
+          })
         end,
 
         ["gopls"] = function()
-          vim.lsp.start(vim.lsp.config("gopls", {
+          require("lspconfig").gopls.setup({
             settings = {
               gopls = {
                 analyses = { unusedparams = true },
                 staticcheck = true,
               },
             },
-          }))
+          })
         end,
 
         ["pyright"] = function()
-          vim.lsp.start(vim.lsp.config("pyright", {}))
+          require("lspconfig").pyright.setup({})
         end,
 
         ["emmet_language_server"] = function()
-        vim.lsp.start(vim.lsp.config("emmet_language_server", {
-        filetypes = {
-            "html",
-            "css",
-            "scss",
-            "sass",
-            "javascriptreact",
-            "typescriptreact",
-            "vue",
-            "svelte",
+          require("lspconfig").emmet_language_server.setup({
+            filetypes = {
+              "html",
+              "css",
+              "scss",
+              "sass",
+              "javascriptreact",
+              "typescriptreact",
+              "vue",
+              "svelte",
             },
-        }))
+          })
         end,
-    }, },
+
+        ["ts_ls"] = function()
+          require("lspconfig").ts_ls.setup({})
+        end,
+
+        ["clangd"] = function()
+          require("lspconfig").clangd.setup({})
+        end,
+
+        ["rust_analyzer"] = function()
+          require("lspconfig").rust_analyzer.setup({})
+        end,
+      },
     },
+  },
 
   -- Optional: completion
   {

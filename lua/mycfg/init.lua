@@ -1,11 +1,11 @@
 -- Load core settings first
 require("mycfg.settings")
 
--- Then keymaps
-require("mycfg.mappings")
-
 -- Then plugins (bootstrap + plugin specs)
 require("mycfg.plugins")
+
+-- Then keymaps (after plugins to avoid being overridden)
+require("mycfg.mappings")
 
 -- Optional: environment or language-specific plugin sets
 require("mycfg.devselect")
