@@ -24,7 +24,7 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 | Go     | 1.25.4    |
 | Node   | 24.11.0   |
 | Java   | 21-tem    |
-| NeoVim | 0.11.5    |
+| NeoVim | 0.11.6    |
 | NVM    | 0.40.3    |
 
 ## Contributing & future tweaks
