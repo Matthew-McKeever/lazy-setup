@@ -25,7 +25,7 @@ The installer reads these values from `linux/mint/versions.conf`; bump them ther
 | Node   | 24.11.0   |
 | Java   | 21-tem    |
 | NeoVim | 0.11.5    |
-| NVM    | 0.40.3    |
+| NVM    | 0.40.4    |
 
 ## Contributing & future tweaks
 - Keep sensitive machine overrides out of git; `versions.conf` should stay public-safe.
